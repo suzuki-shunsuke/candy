@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	runCommand = cli.Command{
-		Name:   "run",
-		Usage:  "run assets",
+	listUpdatedCommand = cli.Command{
+		Name:   "list-updated",
+		Usage:  "list updated tasks",
 		Action: cmd.Run,
 		Flags: []cli.Flag{
 			cli.StringFlag{
@@ -28,9 +28,9 @@ func main() {
 	app.Name = "candy"
 	app.Version = domain.Version
 	app.Author = "suzuki-shunsuke https://github.com/suzuki-shunsuke"
-	app.Usage = "detect updates and run only updated tasks"
+	app.Usage = "detect updates tasks"
 	app.Commands = []cli.Command{
-		runCommand,
+		listUpdatedCommand,
 	}
 	app.Run(os.Args)
 }
