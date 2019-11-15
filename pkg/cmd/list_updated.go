@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 	"path/filepath"
@@ -46,6 +47,16 @@ func listUpdated(params Params) error {
 				for _, file := range task.Files {
 					if len(file.Paths) != 0 {
 						paths = append(paths, file.Paths...)
+						continue
+					}
+					if file.Command != "" {
+						cmd := exec.Command("sh", "-c", file.Command)
+						var stdout bytes.Buffer
+						cmd.Stdout = &stdout
+						if err := cmd.Run(); err != nil {
+							return err
+						}
+						paths = append(paths, strings.Split(stdout.String(), "\n")...)
 					}
 				}
 				t = strings.Join(paths, " ")
