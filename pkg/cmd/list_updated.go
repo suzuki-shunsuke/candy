@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/scylladb/go-set/strset"
 	"github.com/suzuki-shunsuke/go-cliutil"
 	"github.com/urfave/cli"
 
@@ -46,10 +47,14 @@ func listUpdated(params Params) error {
 			// fmt.Println("+ git diff --quiet origin/master HEAD " + target)
 			t := target
 			if len(task.Files) != 0 {
-				paths := []string{}
+				paths := strset.New()
 				for _, file := range task.Files {
 					if len(file.Paths) != 0 {
-						paths = append(paths, file.Paths...)
+						if file.Excluded {
+							paths.Remove(file.Paths...)
+						} else {
+							paths.Add(file.Paths...)
+						}
 						continue
 					}
 					if file.Command != "" {
@@ -60,10 +65,14 @@ func listUpdated(params Params) error {
 						if err := cmd.Run(); err != nil {
 							return err
 						}
-						paths = append(paths, strings.Split(stdout.String(), "\n")...)
+						if file.Excluded {
+							paths.Remove(strings.Split(stdout.String(), "\n")...)
+						} else {
+							paths.Add(strings.Split(stdout.String(), "\n")...)
+						}
 					}
 				}
-				t = strings.Join(paths, " ")
+				t = strings.Join(paths.List(), " ")
 			}
 			cmd := exec.Command("sh", "-c", "git diff --quiet origin/master HEAD "+t)
 			cmd.Env = envs
