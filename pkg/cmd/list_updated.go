@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/suzuki-shunsuke/go-cliutil"
 	"github.com/urfave/cli"
@@ -39,7 +40,17 @@ func listUpdated(params Params) error {
 		}
 		for _, task := range srvCfg.Tasks {
 			// fmt.Println("+ git diff --quiet origin/master HEAD " + target)
-			cmd := exec.Command("git", "diff", "--quiet", "origin/master", "HEAD", target)
+			t := target
+			if len(task.Files) != 0 {
+				paths := []string{}
+				for _, file := range task.Files {
+					if len(file.Paths) != 0 {
+						paths = append(paths, file.Paths...)
+					}
+				}
+				t = strings.Join(paths, " ")
+			}
+			cmd := exec.Command("sh", "-c", "git diff --quiet origin/master HEAD "+t)
 			if err := cmd.Run(); err != nil {
 				// updated
 				fmt.Println(target + ":" + task.Name)
