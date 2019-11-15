@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -34,6 +35,8 @@ func listUpdated(params Params) error {
 		return err
 	}
 
+	envs := os.Environ()
+
 	for _, target := range cfg.Targets {
 		srvCfg := config.ServiceConfig{}
 		if err := config.ReadService(filepath.Join(target, ".candy.yaml"), &srvCfg); err != nil {
@@ -51,6 +54,7 @@ func listUpdated(params Params) error {
 					}
 					if file.Command != "" {
 						cmd := exec.Command("sh", "-c", file.Command)
+						cmd.Env = envs
 						var stdout bytes.Buffer
 						cmd.Stdout = &stdout
 						if err := cmd.Run(); err != nil {
@@ -62,6 +66,7 @@ func listUpdated(params Params) error {
 				t = strings.Join(paths, " ")
 			}
 			cmd := exec.Command("sh", "-c", "git diff --quiet origin/master HEAD "+t)
+			cmd.Env = envs
 			if err := cmd.Run(); err != nil {
 				// updated
 				fmt.Println(target + ":" + task.Name)
