@@ -16,7 +16,14 @@ type (
 	}
 
 	Task struct {
-		Name string
+		Name  string
+		Files []File
+	}
+
+	File struct {
+		Command  string
+		Paths    []string
+		Excluded bool
 	}
 )
 
