@@ -16,8 +16,9 @@ type (
 	}
 
 	Task struct {
-		Name  string
-		Files []File
+		Name   string
+		Files  []File
+		Change Change
 	}
 
 	File struct {
@@ -25,6 +26,25 @@ type (
 		Paths    []string
 		Excluded bool
 	}
+
+	Change struct {
+		IsFilesChanged IsFilesChanged `yaml:"is_files_changed"`
+		// IsFileChanged  IsFileChanged  `yaml:"is_file_changed"`
+		// ChangedFiles   ChangedFiles   `yaml:"changed_files"`
+	}
+
+	IsFilesChanged struct {
+		Command string
+		Stdin   bool
+	}
+
+	//	IsFileChanged struct {
+	//		Command string
+	//	}
+
+	//	ChangedFiles struct {
+	//		Command string
+	//	}
 )
 
 func Read(cfgPath string, cfg *Config) error {
