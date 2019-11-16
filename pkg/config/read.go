@@ -16,14 +16,34 @@ type (
 	}
 
 	Task struct {
-		Name  string
-		Files []File
+		Name   string
+		Files  []File
+		Change Change
 	}
 
 	File struct {
 		Command  string
 		Paths    []string
 		Excluded bool
+	}
+
+	Change struct {
+		IsFileChanged  IsFileChanged  `yaml:"is_file_changed"`
+		IsFilesChanged IsFilesChanged `yaml:"is_files_changed"`
+		ChangedFiles   ChangedFiles   `yaml:"changed_files"`
+	}
+
+	IsFileChanged struct {
+		Command string
+	}
+
+	IsFilesChanged struct {
+		Command string
+		Stdin   bool
+	}
+
+	ChangedFiles struct {
+		Command string
 	}
 )
 

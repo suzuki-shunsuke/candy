@@ -44,10 +44,8 @@ func listUpdated(params Params) error {
 			return err
 		}
 		for _, task := range srvCfg.Tasks {
-			// fmt.Println("+ git diff --quiet origin/master HEAD " + target)
-			t := target
+			paths := strset.New()
 			if len(task.Files) != 0 {
-				paths := strset.New()
 				for _, file := range task.Files {
 					if len(file.Paths) != 0 {
 						if file.Excluded {
@@ -72,12 +70,51 @@ func listUpdated(params Params) error {
 						}
 					}
 				}
-				t = strings.Join(paths.List(), " ")
 			}
-			cmd := exec.Command("sh", "-c", "git diff --quiet origin/master HEAD "+t)
-			cmd.Env = envs
-			if err := cmd.Run(); err != nil {
-				// updated
+			if paths.Size() == 0 {
+				paths.Add(target)
+			}
+			updated := false
+			switch {
+			case task.Change.IsFilesChanged.Command != "":
+				cmd := exec.Command("sh", "-c", task.Change.IsFilesChanged.Command+" "+strings.Join(paths.List(), " "))
+				cmd.Env = envs
+				if err := cmd.Run(); err != nil {
+					updated = true
+				}
+			case task.Change.ChangedFiles.Command != "":
+				//	cmd := exec.Command("sh", "-c", task.Change.ChangedFiles.Command)
+				//	cmd.Env = envs
+				//	var stdout bytes.Buffer
+				//	cmd.Stdout = &stdout
+				//	if err := cmd.Run(); err != nil {
+				//		return err
+				//	}
+				//	changedFiles := strset.New(strings.Split(stdout.String(), "\n")...)
+				//	changedFiles.Each(func(changedFile string) bool {
+				//		paths.Each(func(p string) bool {
+				//			if changedFile == p {
+				//				updated = true
+				//				return false
+				//			}
+				//			if filepath.Rel(changedFile, p) {
+				//
+				//			}
+				//			return true
+				//		})
+				//		if updated {
+				//			return false
+				//		}
+				//		return true
+				//	})
+			default:
+				cmd := exec.Command("sh", "-c", "git diff --quiet origin/master HEAD "+strings.Join(paths.List(), " "))
+				cmd.Env = envs
+				if err := cmd.Run(); err != nil {
+					updated = true
+				}
+			}
+			if updated {
 				fmt.Println(target + ":" + task.Name)
 			}
 		}
