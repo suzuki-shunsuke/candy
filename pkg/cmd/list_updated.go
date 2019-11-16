@@ -82,31 +82,6 @@ func listUpdated(params Params) error {
 				if err := cmd.Run(); err != nil {
 					updated = true
 				}
-			case task.Change.ChangedFiles.Command != "":
-				//	cmd := exec.Command("sh", "-c", task.Change.ChangedFiles.Command)
-				//	cmd.Env = envs
-				//	var stdout bytes.Buffer
-				//	cmd.Stdout = &stdout
-				//	if err := cmd.Run(); err != nil {
-				//		return err
-				//	}
-				//	changedFiles := strset.New(strings.Split(stdout.String(), "\n")...)
-				//	changedFiles.Each(func(changedFile string) bool {
-				//		paths.Each(func(p string) bool {
-				//			if changedFile == p {
-				//				updated = true
-				//				return false
-				//			}
-				//			if filepath.Rel(changedFile, p) {
-				//
-				//			}
-				//			return true
-				//		})
-				//		if updated {
-				//			return false
-				//		}
-				//		return true
-				//	})
 			default:
 				cmd := exec.Command("sh", "-c", "git diff --quiet origin/master HEAD "+strings.Join(paths.List(), " "))
 				cmd.Env = envs

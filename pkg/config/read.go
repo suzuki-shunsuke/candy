@@ -28,13 +28,9 @@ type (
 	}
 
 	Change struct {
-		IsFileChanged  IsFileChanged  `yaml:"is_file_changed"`
 		IsFilesChanged IsFilesChanged `yaml:"is_files_changed"`
-		ChangedFiles   ChangedFiles   `yaml:"changed_files"`
-	}
-
-	IsFileChanged struct {
-		Command string
+		// IsFileChanged  IsFileChanged  `yaml:"is_file_changed"`
+		// ChangedFiles   ChangedFiles   `yaml:"changed_files"`
 	}
 
 	IsFilesChanged struct {
@@ -42,9 +38,13 @@ type (
 		Stdin   bool
 	}
 
-	ChangedFiles struct {
-		Command string
-	}
+	//	IsFileChanged struct {
+	//		Command string
+	//	}
+
+	//	ChangedFiles struct {
+	//		Command string
+	//	}
 )
 
 func Read(cfgPath string, cfg *Config) error {
