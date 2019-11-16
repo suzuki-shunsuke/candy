@@ -13,11 +13,15 @@ var (
 	listUpdatedCommand = cli.Command{
 		Name:   "list-updated",
 		Usage:  "list updated tasks",
-		Action: cmd.Run,
+		Action: cmd.ListUpdated,
 		Flags: []cli.Flag{
 			cli.StringFlag{
 				Name:  "config, c",
 				Usage: "configuration file path",
+			},
+			cli.BoolFlag{
+				Name:  "debug",
+				Usage: "debug mode",
 			},
 		},
 	}
